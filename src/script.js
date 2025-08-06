@@ -21,12 +21,56 @@ scene.add(axesHelper);
 /**
  * House
  */
+//
+// texture loader
+const textureLoader = new THREE.TextureLoader();
 
+// floor texture
+const floorAlphaTexture = textureLoader.load("./floor/alpha.jpg");
+const floorARMTexture = textureLoader.load(
+  "./floor/forest_leaves_02_1k/forest_leaves_02_arm_1k.jpg"
+);
+const floorColorTexture = textureLoader.load(
+  "./floor/forest_leaves_02_1k/forest_leaves_02_diffuse_1k.jpg"
+);
+const floorNormalTexture = textureLoader.load(
+  "./floor/forest_leaves_02_1k/forest_leaves_02_nor_gl_1k.jpg"
+);
+const floorDisplacementTexture = textureLoader.load(
+  "./floor/forest_leaves_02_1k/forest_leaves_02_disp_1k.jpg"
+);
+floorColorTexture.colorSpace = THREE.SRGBColorSpace;
+
+floorARMTexture.repeat.set(8, 8);
+floorNormalTexture.repeat.set(8, 8);
+floorDisplacementTexture.repeat.set(8, 8);
+floorColorTexture.repeat.set(8, 8);
+
+floorColorTexture.wrapS = THREE.RepeatWrapping;
+floorARMTexture.wrapS = THREE.RepeatWrapping;
+floorNormalTexture.wrapS = THREE.RepeatWrapping;
+floorDisplacementTexture.wrapS = THREE.RepeatWrapping;
+
+floorColorTexture.wrapT = THREE.RepeatWrapping;
+floorARMTexture.wrapT = THREE.RepeatWrapping;
+floorNormalTexture.wrapT = THREE.RepeatWrapping;
+floorDisplacementTexture.wrapT = THREE.RepeatWrapping;
 // floor
 
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(20, 30),
-  new THREE.MeshStandardMaterial()
+  new THREE.PlaneGeometry(20, 20, 100, 100),
+  new THREE.MeshStandardMaterial({
+    alphaMap: floorAlphaTexture,
+    transparent: true,
+    map: floorColorTexture,
+    aoMap: floorARMTexture,
+    roughnessMap: floorARMTexture,
+    metalnessMap: floorARMTexture,
+    normalMap: floorNormalTexture,
+    displacementMap: floorDisplacementTexture,
+    displacementScale: 0.41,
+    displacementBias: -0.13,
+  })
 );
 
 floor.rotation.x = -Math.PI * 0.5;
@@ -37,9 +81,29 @@ scene.add(floor);
 const house = new THREE.Group();
 scene.add(house);
 
+//wall texture
+const wallARMTexture = textureLoader.load(
+  "./wall/mossy_brick_1k/mossy_brick_arm_1k.jpg"
+);
+const wallColorTexture = textureLoader.load(
+  "./wall/mossy_brick_1k/mossy_brick_diff_1k.jpg"
+);
+const wallNormalTexture = textureLoader.load(
+  "./wall/mossy_brick_1k/mossy_brick_nor_gl_1k.jpg"
+);
+
+wallColorTexture.colorSpace = THREE.SRGBColorSpace;
+
+//walls
 const walls = new THREE.Mesh(
   new THREE.BoxGeometry(4, 2.5, 4),
-  new THREE.MeshStandardMaterial()
+  new THREE.MeshStandardMaterial({
+    map: wallColorTexture,
+    aoMap: wallARMTexture,
+    roughnessMap: wallARMTexture,
+    metalnessMap: wallARMTexture,
+    normalMap: wallNormalTexture,
+  })
 );
 walls.position.y = 1.25;
 house.add(walls);
@@ -88,6 +152,26 @@ bush4.scale.set(0.15, 0.15, 0.15);
 house.add(bush1, bush2, bush3, bush4);
 
 //Graves
+const graveGeom = new THREE.BoxGeometry(0.6, 0.8, 0.2);
+const graveMat = new THREE.MeshStandardMaterial();
+const graves = new THREE.Group();
+scene.add(graves);
+
+for (let i = 0; i < 30; i++) {
+  let angle = Math.random() * Math.PI * 2;
+  let radius = 3 + Math.random() * 4;
+  const grave = new THREE.Mesh(graveGeom, graveMat);
+  grave.position.x = Math.sin(angle) * radius;
+  grave.position.z = Math.cos(angle) * radius;
+  grave.position.y = Math.random() * 0.4;
+  grave.rotation.set(
+    (Math.random() - 0.5) * 0.4,
+    (Math.random() - 0.5) * 0.4,
+    (Math.random() - 0.5) * 0.4
+  );
+  graves.add(grave);
+}
+//Texture
 
 /**
  * Lights
